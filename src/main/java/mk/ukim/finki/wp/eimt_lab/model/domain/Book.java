@@ -18,8 +18,10 @@ public class Book extends BaseAuditableEntity {
     @Column(nullable = false)
     String name;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     BookCategory category;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     BookState state;
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
