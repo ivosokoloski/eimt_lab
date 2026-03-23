@@ -1,11 +1,13 @@
 package mk.ukim.finki.wp.eimt_lab.web.controller;
 
 import jakarta.validation.Valid;
+import mk.ukim.finki.wp.eimt_lab.model.domain.ActivityLog;
 import mk.ukim.finki.wp.eimt_lab.model.domain.BookCategory;
 import mk.ukim.finki.wp.eimt_lab.model.domain.BookState;
 import mk.ukim.finki.wp.eimt_lab.model.dto.CreateBookDto;
 import mk.ukim.finki.wp.eimt_lab.model.dto.DisplayBookDto;
 import mk.ukim.finki.wp.eimt_lab.model.projection.BookExtendedProjection;
+import mk.ukim.finki.wp.eimt_lab.repository.ActivityLogRepository;
 import mk.ukim.finki.wp.eimt_lab.repository.BookRepository;
 import mk.ukim.finki.wp.eimt_lab.service.application.BookApplicationService;
 import org.springframework.data.domain.Page;
@@ -22,10 +24,12 @@ import java.util.stream.Collectors;
 public class BookController {
     private final BookApplicationService bookApplicationService;
     private final BookRepository bookRepository;
+    private final ActivityLogRepository activityLogRepository ;
 
-    public BookController(BookApplicationService bookApplicationService, BookRepository bookRepository) {
+    public BookController(BookApplicationService bookApplicationService, BookRepository bookRepository, ActivityLogRepository activityLogRepository) {
         this.bookApplicationService = bookApplicationService;
         this.bookRepository = bookRepository;
+        this.activityLogRepository = activityLogRepository;
     }
 
 
@@ -109,5 +113,13 @@ public class BookController {
     public ResponseEntity<Void> rentBook(@PathVariable Long id, @RequestParam String email) {
         this.bookApplicationService.rentBook(id, email);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/logs")
+    public Page<ActivityLog> getActivityLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return activityLogRepository.findAll(pageable);
     }
 }
